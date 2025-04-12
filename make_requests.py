@@ -76,6 +76,29 @@ def save_json_to_file(data, filename):
 if __name__ == '__main__':
     remaining_requests = 1 #  Initialize remaining requests to 1
     offset = 0 # # offset is used to paginate through the API results. 
+    limit = 1000 # The maximum number of records to retreieve in one request
+    file_counter = 0 # Initialize file counter to 0
 
-    limit = 1000 # The maximum number of records to retreieve in one requees
+    while remaining_requests > 0 and file_counter < 39:
+        # construct the URL with the offset and limit parameters
+        url = f'{web_site}?offset={offset}&limit={limit}' # what is happening here on this line?
+        # Call the API and get the response
+
+        response, remaining_requests = call_api(url, token)
+        
+        # Check if the response is valid
+        if response:
+            # save response to a file
+            output_file = f'locations_{file_counter}.json'
+            save_json_to_file(response, output_file)
+
+            # Increment the file counter
+            offset += limit
+            file_counter += 1
+        else:
+            print('Failed to retrieve data from API, exiting loop')
+            break
+        
+    
+    print('All files saved successfully.')
 
