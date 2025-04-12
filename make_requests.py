@@ -9,7 +9,6 @@ import urllib.error  # For handling HTTP and URL errors
 import json
 import os
 
-
 web_site = 'https://www.ncdc.noaa.gov/cdo-web/api/v2/locations'
 token = 'UHXohzHdhMmtTMDEsZrzsNJYqXsORDFt'
 
@@ -33,7 +32,7 @@ def call_api(url, token):
         req = urllib.request.Request(url)
         req.add_header('token', token)
         with urllib.request.urlopen(req) as response:
-            data = json.loads(response.read().decode)('utf-8')
+            data = json.loads(response.read().decode('utf-8'))
             # Get the remaining rate limit from the headers
             rate_limit_remaining = int(response.headers.get('X-RateLimit-Remaining', 0))
             return data, rate_limit_remaining
@@ -51,7 +50,7 @@ def call_api(url, token):
         # Handle any other unexpected errors
         print(f"An unexpected error occurred: {e}")
 
-    return None  # Return None if an error occurs
+    return None,0  # Return None if an error occurs
 
 def save_json_to_file(data, filename):
     """
@@ -71,4 +70,12 @@ def save_json_to_file(data, filename):
     except Exception as e:
         # Handle any other unexpected errors
         print(f'An unexpected error occurred while saving the file: {e}')
-        
+
+
+
+if __name__ == '__main__':
+    remaining_requests = 1 #  Initialize remaining requests to 1
+    offset = 0 # # offset is used to paginate through the API results. 
+
+    limit = 1000 # The maximum number of records to retreieve in one requees
+
