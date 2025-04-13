@@ -77,7 +77,7 @@ if __name__ == '__main__':
     limit = 1000  # The maximum number of records to retrieve in one request
     offset_increment = limit  # Increment offset by the limit for each request
 
-    for i in range(40):  # Loop 39 times to create 39 files
+    for i in range(0,40):  # Loop 39 times to create 39 files
         offset = i * offset_increment  # Calculate the offset for this iteration
         url = f"{web_site}?limit={limit}&offset={offset}"  # Construct the URL
         output_file = f"locations_{i}.json"  # Name the output file
