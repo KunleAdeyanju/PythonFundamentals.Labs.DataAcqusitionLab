@@ -74,31 +74,33 @@ def save_json_to_file(data, filename):
 
 
 if __name__ == '__main__':
-    remaining_requests = 1 #  Initialize remaining requests to 1
-    offset = 0 # # offset is used to paginate through the API results. 
-    limit = 1000 # The maximum number of records to retreieve in one request
-    file_counter = 0 # Initialize file counter to 0
+    limit = 1000  # The maximum number of records to retrieve in one request
+    offset_increment = limit  # Increment offset by the limit for each request
 
-    while remaining_requests > 0 and file_counter < 39:
-        # construct the URL with the offset and limit parameters
-        url = f'{web_site}?offset={offset}&limit={limit}' # what is happening here on this line?
-        # Call the API and get the response
+    for i in range(40):  # Loop 39 times to create 39 files
+        offset = i * offset_increment  # Calculate the offset for this iteration
+        url = f"{web_site}?limit={limit}&offset={offset}"  # Construct the URL
+        output_file = f"locations_{i}.json"  # Name the output file
 
+        print(f"Calling API with: {url}")
         response, remaining_requests = call_api(url, token)
-        
+
         # Check if the response is valid
         if response:
-            # save response to a file
-            output_file = f'locations_{file_counter}.json'
-            save_json_to_file(response, output_file)
+            results = response.get('results', [])
+            print(f"Fetched {len(results)} records in this batch.")
 
-            # Increment the file counter
-            offset += limit
-            file_counter += 1
+            # Save the response to a file
+            save_json_to_file(response, output_file)
+            print(f"Data saved to {output_file}")
+
+            # Stop if fewer records are returned than the limit
+            if len(results) < limit:
+                print("No more records to fetch.")
+                break
         else:
-            print('Failed to retrieve data from API, exiting loop')
+            print(f"Failed to retrieve data for offset {offset}, exiting loop.")
             break
-        
-    
-    print('All files saved successfully.')
+
+    print("All files saved successfully.")
 
